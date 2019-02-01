@@ -10,15 +10,15 @@
 <script src='https://d3js.org/d3.v4.min.js'></script>
 
 <script>
+
   d3.csv("kospi200_price_changes.csv", function(d) {
     return {
       code : +d.Code,
       name : d["Issue Name"]
     };
-  }).then(function(data) {
-  console.log(data[0]);
+  }, function(error, rows) {
+    console.log(rows);
   });
-
 
 </script>
 
