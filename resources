@@ -1,0 +1,33 @@
+[Progress & Milestones]
+
+January 8th
+ * Intro to BeautifulSoup
+ * Practiced extracting specific data from EPL website
+
+January 22nd
+ * Collected Kospi 200 constituents from KRX website
+ * Collected data on changes in constituents
+ * Intro to Pandas DataFrame
+ * Parsed Excel File to Pandas Dataframe
+ * Identified url to locate historical prices
+
+January 29th
+ * Web scraped adjusted prices for a given stock using BeautifulSoup
+ * Calculated Share Price Change and appended the value to the DataFrame
+ * Exported the DataFrame to a csv file
+
+To Do:
+ * Error handling for constituents that changed
+ * Find source for sector data. Scrape and append to the same csv.
+ * Visualize the data file using d3.js
+ - first do it using just 1dummy row
+ - try it on sliced table (5 rows)
+
+Details for Visualization
+ * Share price changes mapped on x scale
+ * Market cap represented by the size of the bubble (scaled radius)
+ * Indicate what sector the stock belongs to using color
+ * Opacity for total trading volume?(but would need to extract this as well...)
+
+Major Challenge
+ * No access to Microsoft Excel - cannot modify the excel file

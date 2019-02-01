@@ -1,0 +1,26 @@
+<html>
+<head>
+    <title>Learn D3 in 5 minutes</title>
+</head>
+<body>
+
+<h3>Today is a beautiful day!!</h3>
+<ul> </ul>
+
+<script src='https://d3js.org/d3.v4.min.js'></script>
+
+<script>
+  d3.csv("kospi200_price_changes.csv", function(d) {
+    return {
+      code : +d.Code,
+      name : d["Issue Name"]
+    };
+  }).then(function(data) {
+  console.log(data[0]);
+  });
+
+
+</script>
+
+</body>
+</html>
