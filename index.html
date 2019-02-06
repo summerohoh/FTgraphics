@@ -1,26 +1,29 @@
+<!DOCTYPE html>
 <html>
+
 <head>
-    <title>Learn D3 in 5 minutes</title>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <title>FTgraphics</title>
+  <!--Bootstrap -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <!--custom styling -->
+  <link rel="stylesheet" hfre="css/style.css"
 </head>
+
+
 <body>
+  <div class="container">
+    <div class="row">
+      <h3 style="margin-left:100px">KOSPI 200</h3>
+      <div id="chart-area"></div>
+    </div>
+  </div>
 
-<h3>Today is a beautiful day!!</h3>
-<ul> </ul>
+  <!-- load the js library -->
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src='js/main.js'></script>
 
-<script src='https://d3js.org/d3.v4.min.js'></script>
-
-<script>
-
-  d3.csv("kospi200_price_changes.csv", function(d) {
-    return {
-      code : +d.Code,
-      name : d["Issue Name"]
-    };
-  }, function(error, rows) {
-    console.log(rows);
-  });
-
-</script>
 
 </body>
 </html>
