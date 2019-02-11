@@ -16,25 +16,35 @@ January 29th
  * Calculated Share Price Change and appended the value to the DataFrame
  * Exported the DataFrame to a csv file
 
-To Do:
- * Error handling for constituents that changed
- * Find source for sector data. Scrape and append to the same csv.
- * Visualize the data file using d3.js
- - first do it using just 1dummy row
- - try it on sliced table (5 rows)
+February 3rd
+ * d3.js course - completed 10%
+ * implemented scale and mapped axis, full height ticks
+ * displayed 5 sliced result
 
-Details for Visualization
- * Share price changes mapped on x scale
- * Market cap represented by the size of the bubble (scaled radius)
- * Indicate what sector the stock belongs to using color
- * Opacity for total trading volume?(but would need to extract this as well...)
+February 6th
+ * d3.js course - completed 40%
+ * adjusted circle sizes from linear scale radius to sqrt scale
+ * implemented d3 force layout with fixed x position to prevent circle overlaps on y axis
 
-Major Challenge
- * No access to Microsoft Excel - cannot modify the excel file
-
- February 3rd
- *d3.js online course
+February 10th
+  * Error handling for changes in compostions
+  * Detected stocks that changed and set initial date as date added.
+  * Challenge: needed epoch timestamp to query yahoo finance. Made date-to-epoch time converter function.
 
 
 
- Domain = input, Range = output
+ To Do:
+  * Error handling for constituents that changed
+  * Find source for sector data. Scrape and append to the same csv.
+  * Visualize the data file using d3.js
+  - try it on sliced table (5 rows)
+  * style the ticks & axis
+
+ Details for Visualization
+  * Share price changes mapped on x scale
+  * Market cap represented by the size of the bubble (scaled radius)
+  * Indicate what sector the stock belongs to using color
+  * Opacity for total trading volume?(but would need to extract this as well...)
+
+  Major Challenge
+  * No access to Microsoft Excel - cannot modify the excel file

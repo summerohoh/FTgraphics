@@ -12,7 +12,7 @@ import pandas as pd
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import csv
-from datetime import datetime
+from datetime import datetime, timezone
 
 os.chdir("/Users/summer/Desktop/FTgraphics")
 os.listdir('.')
@@ -23,12 +23,20 @@ xl = pd.ExcelFile(file)
 
 #load a sheet into a DataFrame named kospi200
 kospi200 = xl.parse(xl.sheet_names[0], converters={'Code':str})
-
 # Filter out unimportant columns
 kospi200 = kospi200[['Code','Issue Name', 'Market Cap(KRW)', 'Index Market Cap weight(%)']]
 
+#load list of changes in composition for error handling
+file_changes = "changes_eng.xls"
+xl2 = pd.ExcelFile(file_changes)
+changes = xl2.parse(xl2.sheet_names[0])
+changes=changes[['Change Date','Addition Issue Name']].dropna()
+print(changes)
+
 #for testing, slice only 5 iterrows
-kospi200=kospi200.loc[0:4,:]
+#kospi200=kospi200.loc[0:4,:]
+kospi200=kospi200.tail(3)
+#print (kospi200)
 
 
 def extract_adj_price(stock_code, yahoo_date_code):
@@ -46,17 +54,40 @@ def extract_adj_price(stock_code, yahoo_date_code):
 
 share_price_changes = []
 
+def epoch_converter(date):
+    date = date.replace("/","-")
+    date = date + " 0:0:0"
+    dateobj=datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    timestamp = int(dateobj.timestamp())
+    return timestamp
+
 for row in kospi200.itertuples(index=True, name="stock"):
 
-    #dictionary to map dates to yahoo_date_code
-    dates = {
-    '12-28-2017': '1514386800', #last trading day in 2017
-    '12-28-2018': '1545922800', #last trading day in 2018
-    }
+    # #dictionary to map dates to yahoo_date_code
+    # dates = {
+    # '12-28-2017': '1514386800', #last trading day in 2017
+    # '12-28-2018': '1545922800', #last trading day in 2018
+    # }
+
+    if changes['Addition Issue Name'].str.contains(row[2]).any():
+        print ("Yo problem here: " + row[2])
+        change_num = changes.index[changes['Addition Issue Name'] == row[2]].tolist()
+        #init date is when stock was added to the index
+        print(change_num)
+        init_date = epoch_converter(changes.at[change_num[0],'Change Date'])
+        print(init_date)
+    else:
+        #init diate is 12-28-2017
+        init_date = epoch_converter('2017/12/28')
+
+
 
     # find adj_price for first and lastday
-    init_price = extract_adj_price(row[1],dates['12-28-2017'])
-    final_price = extract_adj_price(row[1],dates['12-28-2018'])
+    #init_price = extract_adj_price(row[1],dates['12-28-2017'])
+    init_price = extract_adj_price(row[1],init_date)
+    #print("init_price: " + init_price)
+    final_price = extract_adj_price(row[1],epoch_converter('2018/12/28'))
+    #print("final_price: " + final_price)
 
     #calculate increase in share price
     change = round(((final_price - init_price)/init_price)*100,2)
@@ -67,11 +98,12 @@ for row in kospi200.itertuples(index=True, name="stock"):
 # Create a column for share price change
 kospi200['Share Price Change'] = share_price_changes
 
-kospi200.to_csv('kospi200_price_changes.csv',index=False)
-
+#kospi200.to_csv('kospi200_price_changes.csv',index=False)
+kospi200.to_csv('test1.csv',index=False)
 
 
 #writer = pd.ExcelWriter('example.xlsx', engine='xlsxwriter')
 
 #sample url to yahoo finance:
 #https://finance.yahoo.com/quote/005930.KS/history?period1=1514646000&period2=1546182000&interval=1d&filter=history&frequency=1d
+#https://finance.yahoo.com/quote/298040.KS/history?period1=1514386800&period2=1514386800&interval=1d&filter=history&frequency=1d
