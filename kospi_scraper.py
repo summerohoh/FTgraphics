@@ -1,11 +1,3 @@
-# import csv
-# with open("20181228kospi200_list.csv", mode='r') as csv_file:
-#     csv_reader= csv.DictReader(csv_file)
-#     first =next(iter(csv_reader))
-#     print(first)
-#
-#     product = first["종목코드"] + ".KS"
-#     print(product)
 
 import os
 import pandas as pd
@@ -13,6 +5,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import csv
 from datetime import datetime, timezone
+from multiprocessing import Process
 
 os.chdir("/Users/summer/Desktop/FTgraphics")
 os.listdir('.')
@@ -31,12 +24,17 @@ file_changes = "changes_eng.xls"
 xl2 = pd.ExcelFile(file_changes)
 changes = xl2.parse(xl2.sheet_names[0])
 changes=changes[['Change Date','Addition Issue Name']].dropna()
-print(changes)
+
+#manipulate changes file because it's wrong!
+#SKCHEM was added on 20180110 for some reason did not work so tried 01/11
+changes.at[8, 'Change Date']='2018/01/11'
 
 #for testing, slice only 5 iterrows
-#kospi200=kospi200.loc[0:4,:]
-kospi200=kospi200.tail(3)
-#print (kospi200)
+#[0,10]returns 11 results so to get 200 need to do 199?
+kospi200=kospi200.loc[0:9,:]
+#kospi200=kospi200.loc[0:200,:]
+#kospi200=kospi200.tail(3)
+
 
 
 def extract_adj_price(stock_code, yahoo_date_code):
@@ -44,6 +42,7 @@ def extract_adj_price(stock_code, yahoo_date_code):
     page_url = "https://finance.yahoo.com/quote/"+str(stock_code)+".KS/history?period1="+str(yahoo_date_code)+"&period2="+str(yahoo_date_code)+"&interval=1d&filter=history&frequency=1d"
     # query the website and return the html to the variable ‘page’
     page = urlopen(page_url)
+    print(page_url)
     # parse the html using beautiful soup and store in variable `soup`
     soup = BeautifulSoup(page, "html.parser")
     info_row = soup.find("table", {"data-test":"historical-prices"}).find("tbody").find_all("tr")[0]
@@ -63,13 +62,7 @@ def epoch_converter(date):
 
 for row in kospi200.itertuples(index=True, name="stock"):
 
-    # #dictionary to map dates to yahoo_date_code
-    # dates = {
-    # '12-28-2017': '1514386800', #last trading day in 2017
-    # '12-28-2018': '1545922800', #last trading day in 2018
-    # }
-
-    if changes['Addition Issue Name'].str.contains(row[2]).any():
+    if changes['Addition Issue Name'].eq(row[2]).any():
         print ("Yo problem here: " + row[2])
         change_num = changes.index[changes['Addition Issue Name'] == row[2]].tolist()
         #init date is when stock was added to the index
@@ -83,7 +76,6 @@ for row in kospi200.itertuples(index=True, name="stock"):
 
 
     # find adj_price for first and lastday
-    #init_price = extract_adj_price(row[1],dates['12-28-2017'])
     init_price = extract_adj_price(row[1],init_date)
     #print("init_price: " + init_price)
     final_price = extract_adj_price(row[1],epoch_converter('2018/12/28'))
@@ -91,19 +83,17 @@ for row in kospi200.itertuples(index=True, name="stock"):
 
     #calculate increase in share price
     change = round(((final_price - init_price)/init_price)*100,2)
+    print (str(row) + row[2])
     share_price_changes.append(change)
-    #kospi200 = kospi200.assign(change=p.Series(np.random.randn(sLength)).values)
-
 
 # Create a column for share price change
-kospi200['Share Price Change'] = share_price_changes
+kospi200['Share Price Change(%)'] = share_price_changes
 
 #kospi200.to_csv('kospi200_price_changes.csv',index=False)
 kospi200.to_csv('test1.csv',index=False)
 
-
-#writer = pd.ExcelWriter('example.xlsx', engine='xlsxwriter')
-
 #sample url to yahoo finance:
 #https://finance.yahoo.com/quote/005930.KS/history?period1=1514646000&period2=1546182000&interval=1d&filter=history&frequency=1d
-#https://finance.yahoo.com/quote/298040.KS/history?period1=1514386800&period2=1514386800&interval=1d&filter=history&frequency=1d
+#https://finance.yahoo.com/quote/298040.KS/history?period1=1515337200&period2=1515337200&interval=1d&filter=history&frequency=1d
+#sector labelText__6f58d7c0
+#industry labelText__6f58d7c0

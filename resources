@@ -31,6 +31,21 @@ February 10th
   * Detected stocks that changed and set initial date as date added.
   * Challenge: needed epoch timestamp to query yahoo finance. Made date-to-epoch time converter function.
 
+FEBRAURY 11TH
+* error handling (bug with SK change date)
+* tested kospi200_scraper , passed 200 cases!
+
+* url to extract industry/sector information
+* challenge: not a consistent source for industry, sector. Too broad (so many categories)
+
+Goal:
+threading to make scraping faster?
+collect sector/industry data
+plot 200 dots and see spacing
+selective marking?
+tip to display info when hover
+kospi150
+
 
 
  To Do:
