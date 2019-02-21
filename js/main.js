@@ -29,7 +29,7 @@ g.append("text")
 
 
 //load data
-d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/kospi200_price_changes.csv")
+d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test1.csv")
   .then(function(data){
 
   // data.forEach(function(d){
@@ -47,10 +47,10 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/kospi200_
       code: node["Code"],
       marketcap: parseFloat(node["Market Cap(KRW)"].replace(/,/g,'')),
       capweight : +node["Index Market Cap weight(%)"],
-      changes : +node["share price change"],
+      changes : +node["Share Price Change(%)"],
       sector : "Technology",
-      x: x(parseFloat(node["share price change"].replace(/,/g,''))),
-      fx: x(parseFloat(node["share price change"].replace(/,/g,'')))
+      x: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,''))),
+      fx: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,'')))
     };
   });
 
@@ -86,10 +86,10 @@ console.log(circleSize(3525916824000));
     var simulation = d3.forceSimulation(nodes)
       .force("y", d3.forceY(250))
       //.force("collide", d3.forceCollide().radius(function(d){ circleSize(d.marketcap) + 0 }))
-      .force("manyBody", d3.forceManyBody().strength(-80))
+      .force("manyBody", d3.forceManyBody().strength(-140))
       .stop();
 
-    for (var i = 0; i < 200; ++i) simulation.tick();
+    for (var i = 0; i < 100; ++i) simulation.tick();
 
     var circle = svg.selectAll("circle")
       .data(nodes)

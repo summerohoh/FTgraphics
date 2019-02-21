@@ -5,7 +5,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import csv
 from datetime import datetime, timezone
-from multiprocessing import Process
+from multiprocessing import Pool
 
 os.chdir("/Users/summer/Desktop/FTgraphics")
 os.listdir('.')
@@ -31,27 +31,16 @@ changes.at[8, 'Change Date']='2018/01/11'
 
 #for testing, slice only 5 iterrows
 #[0,10]returns 11 results so to get 200 need to do 199?
-kospi200=kospi200.loc[0:9,:]
-#kospi200=kospi200.loc[0:200,:]
-#kospi200=kospi200.tail(3)
+kospi200=kospi200.loc[0:200,:]
 
-
-
-def extract_adj_price(stock_code, yahoo_date_code):
-    # specify the url
-    page_url = "https://finance.yahoo.com/quote/"+str(stock_code)+".KS/history?period1="+str(yahoo_date_code)+"&period2="+str(yahoo_date_code)+"&interval=1d&filter=history&frequency=1d"
-    # query the website and return the html to the variable ‘page’
-    page = urlopen(page_url)
-    print(page_url)
+def extract_adj_price(url):
+    page = urlopen(url)
     # parse the html using beautiful soup and store in variable `soup`
     soup = BeautifulSoup(page, "html.parser")
     info_row = soup.find("table", {"data-test":"historical-prices"}).find("tbody").find_all("tr")[0]
     adj_price = info_row.find_all("td")[5].find("span").text.replace(",","")
     adj_price = int(adj_price[:-3]) #strip .00 and convert to number
     return (adj_price)
-
-
-share_price_changes = []
 
 def epoch_converter(date):
     date = date.replace("/","-")
@@ -60,37 +49,55 @@ def epoch_converter(date):
     timestamp = int(dateobj.timestamp())
     return timestamp
 
-for row in kospi200.itertuples(index=True, name="stock"):
+def get_url():
+    links = []
+    for row in kospi200.itertuples(index=True, name="stock"):
+        url_pair=[]
+        if changes['Addition Issue Name'].eq(row[2]).any():
+            change_num = changes.index[changes['Addition Issue Name'] == row[2]].tolist()
+            #init date is when stock was added to the index
+            init_date = epoch_converter(changes.at[change_num[0],'Change Date'])
+        else:
+            #init date is 12-28-2017
+            init_date = epoch_converter('2017/12/28')
 
-    if changes['Addition Issue Name'].eq(row[2]).any():
-        print ("Yo problem here: " + row[2])
-        change_num = changes.index[changes['Addition Issue Name'] == row[2]].tolist()
-        #init date is when stock was added to the index
-        print(change_num)
-        init_date = epoch_converter(changes.at[change_num[0],'Change Date'])
-        print(init_date)
-    else:
-        #init diate is 12-28-2017
-        init_date = epoch_converter('2017/12/28')
+        last_date=epoch_converter('2018/12/28')
+
+        #find url for first and lastday
+        url1= "https://finance.yahoo.com/quote/"+str(row[1])+".KS/history?period1="+str(init_date)+"&period2="+str(init_date)+"&interval=1d&filter=history&frequency=1d"
+        url2= "https://finance.yahoo.com/quote/"+str(row[1])+".KS/history?period1="+str(last_date)+"&period2="+str(last_date)+"&interval=1d&filter=history&frequency=1d"
+        url_pair.extend((url1,url2))
+        links.append(url_pair)
+    return links
 
 
-
-    # find adj_price for first and lastday
-    init_price = extract_adj_price(row[1],init_date)
-    #print("init_price: " + init_price)
-    final_price = extract_adj_price(row[1],epoch_converter('2018/12/28'))
-    #print("final_price: " + final_price)
+def parse(url1, url2, url3):
+    #find adj_price for first and lastday
+    init_price = extract_adj_price(url1)
+    final_price = extract_adj_price(url2)
 
     #calculate increase in share price
     change = round(((final_price - init_price)/init_price)*100,2)
-    print (str(row) + row[2])
-    share_price_changes.append(change)
+    sector = extract_sector(url3)
+
+    return change,sector
+
+
+links_list = get_url()
+#share_price_changes = []
+with Pool(10) as p:
+    result = p.starmap(parse,links_list)
+    p.close()
+    p.join()
+
+
+print(share_price_changes)
 
 # Create a column for share price change
 kospi200['Share Price Change(%)'] = share_price_changes
 
 #kospi200.to_csv('kospi200_price_changes.csv',index=False)
-kospi200.to_csv('test1.csv',index=False)
+kospi200.to_csv('kospi200_price_changes.csv',index=False)
 
 #sample url to yahoo finance:
 #https://finance.yahoo.com/quote/005930.KS/history?period1=1514646000&period2=1546182000&interval=1d&filter=history&frequency=1d
