@@ -24,12 +24,12 @@ g.append("text")
   var x = d3.scaleLinear()
     //.domain([d3.min(data,function(d){return d.changes}),
     //         d3.max(data,function(d){return d.changes})])
-      .domain([-80,100])
+      .domain([-80,120])
       .range([0+padding,width-padding]);//add padding so the circle does not get cutoff
 
 
 //load data
-d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test1.csv")
+d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv")
   .then(function(data){
 
   // data.forEach(function(d){
@@ -62,7 +62,7 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test1.csv
   var circleSize =d3.scaleSqrt()
     .domain([0, d3.max(nodes,function(d){
     return d.marketcap})])
-    .range([0, 30])
+    .range([0, 60])
 
 console.log(circleSize(3525916824000));
 
@@ -84,9 +84,9 @@ console.log(circleSize(3525916824000));
     .call(xAxis)
 
     var simulation = d3.forceSimulation(nodes)
-      .force("y", d3.forceY(250))
+      .force("y", d3.forceY(230))
       //.force("collide", d3.forceCollide().radius(function(d){ circleSize(d.marketcap) + 0 }))
-      .force("manyBody", d3.forceManyBody().strength(-140))
+      //.force("manyBody", d3.forceManyBody().strength(-10))
       .stop();
 
     for (var i = 0; i < 100; ++i) simulation.tick();
