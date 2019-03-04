@@ -1,7 +1,7 @@
 var margin = {top: 20, right: 10, bottom: 20, left: 10};
-var width = 960 - margin.left - margin.right;
+var width = 850 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
-var padding = 50;
+var padding = 20;
 
 
 var svg = d3.select("#chart-area")
@@ -22,8 +22,6 @@ g.append("text")
 
   //X Scale
   var x = d3.scaleLinear()
-    //.domain([d3.min(data,function(d){return d.changes}),
-    //         d3.max(data,function(d){return d.changes})])
       .domain([-80,120])
       .range([0+padding,width-padding]);//add padding so the circle does not get cutoff
 
@@ -31,15 +29,6 @@ g.append("text")
 //load data
 d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv")
   .then(function(data){
-
-  // data.forEach(function(d){
-  //   d.code = d["Code"];
-  //   d.name = d["Issue Name"];
-  //   d.marketcap= parseFloat(d["Market Cap(KRW)"].replace(/,/g,''));
-  //   d.capweight = +d["Index Market Cap weight(%)"];
-  //   d.changes = +d["share price change"];
-  //   d.sector = "Technology";
-  // })
 
   var nodes = data.map(function(node, index) {
     return {
@@ -49,22 +38,19 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv
       capweight : +node["Index Market Cap weight(%)"],
       changes : +node["Share Price Change(%)"],
       sector : "Technology",
-      x: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,''))),
+      //x: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,''))),
       fx: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,'')))
     };
   });
 
   console.log(nodes);
 
-
   //var min = d3.min(data,function(d){return d.changes});
 
   var circleSize =d3.scaleSqrt()
     .domain([0, d3.max(nodes,function(d){
     return d.marketcap})])
-    .range([0, 60])
-
-console.log(circleSize(3525916824000));
+    .range([0, 50])
 
   var color = d3.scaleOrdinal()
     .domain(data.map(function(d){return d.sector}))
@@ -72,7 +58,7 @@ console.log(circleSize(3525916824000));
 
   //add xAxis generator
   var xAxis = d3.axisBottom(x)
-    .ticks(10)
+    .ticks(8)
     .tickSize(-height)
     .tickFormat(function(d){
       return d + "%";
@@ -82,34 +68,51 @@ console.log(circleSize(3525916824000));
     .attr("class","x-axis")
     .attr("transform","translate(0,450)")
     .call(xAxis)
+    .select(".domain").remove()
 
+  g.selectAll(".tick")
+    .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
+
+  g.selectAll(".tick:not(:first-of-type)")
+    .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
+
+//Apply force layout to nodes
     var simulation = d3.forceSimulation(nodes)
       .force("y", d3.forceY(230))
-      //.force("collide", d3.forceCollide().radius(function(d){ circleSize(d.marketcap) + 0 }))
-      //.force("manyBody", d3.forceManyBody().strength(-10))
-      .stop();
+      .force("charge", d3.forceManyBody().strength(-5))
+      .force("x", d3.forceX().x(function(d){
+        return x(d.changes);
+      }))
+      //.force("center", d3.forceCenter(height/2,width/2))
+      .force("collision", d3.forceCollide().radius(function(d){
+        return circleSize(d.marketcap)
+      }))
+      .on('tick', ticked);
 
-    for (var i = 0; i < 100; ++i) simulation.tick();
+//Draw circles
+  function ticked() {
+    var u = g.selectAll('circle')
+             .attr('r', function(d) { return circleSize(d.marketcap)})
+             .attr('cx', function(d) {
+               return d.x
+             })
+             .attr('cy', function(d) {
+               return d.y
+             })
+             .data(nodes)
+             .style("stroke", "1f3c88")
+             .style("fill", "0085CA")
+             .style("opacity", 0.9)
 
-    var circle = svg.selectAll("circle")
-      .data(nodes)
-      .enter().append("circle")
-      //.style("fill", function(d) { return colorScale(d.value); })
-      .attr("cx", function(d) { return d.x} )
-      .attr("cy", function(d) { return d.y} )
-      .attr("r", function(d) { return circleSize(d.marketcap)} )
-      .style("opacity", 0.6);
+    u.enter()
+      .append('circle')
 
+    u.exit().remove()
+  }
 
-//   var simulation = d3.forceSimulation(nodes)
-//      .force("y", d3.forceY(height/2))
-//      .force("collide", d3.forceCollide().radius(function(d){ return circleSize(d.marketcap) + padding }))
-//      .force("manyBody", d3.forceManyBody().strength(0))
-//      .stop();
+//for (var i = 0; i < 2000; ++i) simulation.tick();
 //
-// for (var i = 0; i < 150; ++i) simulation.tick();
-//
-// var circle = svg.selectAll("circle")
+// var circle = g.selectAll("circle")
 //     .data(nodes)
 //     .enter().append("circle")
 //     //.style("fill", function(d) { return colorScale(d.value); })
@@ -119,23 +122,6 @@ console.log(circleSize(3525916824000));
 //     .attr("cy", function(d) { return d.y} )
 //     .attr("r", function(d) { return circleSize(d.marketcap)} )
 //     .style("opacity", 0.6);
-
-
-  //plot circles
-    // var circles = g.selectAll("circle")
-    //   .data(nodes);
-    //
-    // circles.enter()
-    //   .append("circle")
-    //     .attr("cx", function(d,i){
-    //         return x(d.changes);
-    //     })
-    //     .attr("cy", height/2)
-    //     .attr ("r", function(d){
-    //       return circleSize(d.marketcap)
-    //     })
-    //     .attr("fill", "red");
-
 
 }).catch(function(error){
   console.log(error);
