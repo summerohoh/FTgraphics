@@ -26,25 +26,27 @@ options = Options()
 options.add_argument("--headless")
 chromedriver = "/Users/summer/Desktop/FTgraphics/chromedriver"
 #driver = webdriver.Chrome(chromedriver)
+#chrome_options=options
 
-def extract_krx_price(url):
-    driver = webdriver.Chrome(chrome_options=options, executable_path=chromedriver)
+def extract_krx_price(stock,date):
+    driver = webdriver.Chrome(executable_path=chromedriver)
     driver.implicitly_wait(50)
     driver.get(url)
 
+    stock_code = "A"+stock
     price = None
 
     try:
 
         inputStock = driver.find_element_by_class_name("func-finder-input ")
         inputStock.clear()
-        inputStock.send_keys("A005930")
+        inputStock.send_keys(stock_code)
         inputFromDate= driver.find_element_by_name("fromdate")
         inputFromDate.clear()
-        inputFromDate.send_keys("20181228")
+        inputFromDate.send_keys(date)
         inputToDate = driver.find_element_by_name("todate")
         inputToDate.clear()
-        inputToDate.send_keys("20181228")
+        inputToDate.send_keys(date)
         inputToDate.send_keys(Keys.TAB)
 
         element = WebDriverWait(driver, 20).until(
@@ -64,46 +66,19 @@ def extract_krx_price(url):
     return (price)
 
 
-test = extract_krx_price(url)
-print(test)
-#
-#
-# driver = webdriver.Chrome(chrome_options=options, executable_path=chromedriver)
-# driver.implicitly_wait(50)
-# driver.get(url)
-#
-# try:
-#
-#     inputStock = driver.find_element_by_class_name("func-finder-input ")
-#     inputStock.clear()
-#     inputStock.send_keys("A005930")
-#     inputFromDate= driver.find_element_by_name("fromdate")
-#     inputFromDate.clear()
-#     inputFromDate.send_keys("20181228")
-#     inputToDate = driver.find_element_by_name("todate")
-#     inputToDate.clear()
-#     inputToDate.send_keys("20181228")
-#     inputToDate.send_keys(Keys.TAB)
-#
-#
-#     element = WebDriverWait(driver, 20).until(
-#     EC.element_to_be_clickable((By.ID, "btnidc4ca4238a0b923820dcc509a6f75849b")))
-#
-#     element.click()
-#     req = driver.page_source
-#     soup=BeautifulSoup(req, 'html.parser')
-#
-#     info_row = soup.find("tbody", {"class":"CI-GRID-BODY-TABLE-TBODY"}).find_all("tr")[0]
-#     adj_price = info_row.find("td", {"data-name":"tdd_clsprc"}).text.replace(",","")
-#     print(adj_price)
-#
-# finally:
-#     driver.quit()
-#
-# #
-#
-# driver.find_element_by_id("btnidd9d4f495e875a2e075a1a4a6e1b9770f").send_keys(Keys.RETURN)
+def parse(stock,date1, date2):
+    #find adj_price for first and lastday
+    init_price = extract_krx_price(stock, date1)
+    final_price = extract_krx_price(stock, date2)
 
+    #calculate increase in share price
+    change = round(((final_price - init_price)/init_price)*100,2)
+
+    return change
+
+
+test = parse(url,"20171228","20181228")
+print(test)
 
 # def get_url():
 #     links = []
