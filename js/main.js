@@ -27,7 +27,8 @@ g.append("text")
 
 
 //load data
-d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv")
+//d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv")
+d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test2.csv")
   .then(function(data){
 
   var nodes = data.map(function(node, index) {
@@ -109,19 +110,6 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv
 
     u.exit().remove()
   }
-
-//for (var i = 0; i < 2000; ++i) simulation.tick();
-//
-// var circle = g.selectAll("circle")
-//     .data(nodes)
-//     .enter().append("circle")
-//     //.style("fill", function(d) { return colorScale(d.value); })
-//     .attr("cx", function(d,i){
-//             return x(d.changes);
-//     })
-//     .attr("cy", function(d) { return d.y} )
-//     .attr("r", function(d) { return circleSize(d.marketcap)} )
-//     .style("opacity", 0.6);
 
 }).catch(function(error){
   console.log(error);
