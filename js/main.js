@@ -3,6 +3,7 @@ var width = 850 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 var padding = 20;
 
+var kospi = true
 
 var svg = d3.select("#chart-area")
     .append("svg")
@@ -31,6 +32,8 @@ g.append("text")
 d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test2.csv")
   .then(function(data){
 
+    console.log(data)
+
   var nodes = data.map(function(node, index) {
     return {
       index: index,
@@ -44,17 +47,50 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test2.csv
     };
   });
 
-  console.log(nodes);
+  d3.interval(function(){
+    update(nodes)
+    kospi=!kospi
+  }, 5000)
 
-  //var min = d3.min(data,function(d){return d.changes});
+  update(nodes)
+
+}).catch(function(error){
+  console.log(error);
+})
+
+
+function update(nodes){
+
+  var value = kospi ? "kospi":"kosdaq";
+
+  // Get the data again
+  if (value =="kosdaq"){
+    d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv")
+      .then(function(data) {
+      console.log(data)
+      nodes=[]
+      nodes = data.map(function(node, index) {
+        return {
+          index: index,
+          code: node["Code"],
+          marketcap: parseFloat(node["Market Cap(KRW)"].replace(/,/g,'')),
+          capweight : +node["Index Market Cap weight(%)"],
+          changes : +node["Share Price Change(%)"],
+          sector : "Technology",
+          //x: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,''))),
+          fx: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,'')))
+        };
+      });
+  	 });
+}
 
   var circleSize =d3.scaleSqrt()
     .domain([0, d3.max(nodes,function(d){
     return d.marketcap})])
-    .range([0, 50])
+    .range([0, 30]);
 
   var color = d3.scaleOrdinal()
-    .domain(data.map(function(d){return d.sector}))
+    .domain(nodes.map(function(d){return d.sector}))
     .range(d3.schemeSet3);
 
   //add xAxis generator
@@ -69,7 +105,7 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test2.csv
     .attr("class","x-axis")
     .attr("transform","translate(0,450)")
     .call(xAxis)
-    .select(".domain").remove()
+    .select(".domain").remove();
 
   g.selectAll(".tick")
     .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
@@ -93,24 +129,37 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test2.csv
 //Draw circles
   function ticked() {
     var u = g.selectAll('circle')
-             .attr('r', function(d) { return circleSize(d.marketcap)})
-             .attr('cx', function(d) {
-               return d.x
-             })
-             .attr('cy', function(d) {
-               return d.y
-             })
+             //JOIN new data
              .data(nodes)
-             .style("stroke", "1f3c88")
-             .style("fill", "0085CA")
-             .style("opacity", 0.9)
 
+    //EXIT old elements
+    u.exit().remove()
+
+    //UPDATE old elements
+    u
+      .attr('r', function(d) { return circleSize(d.marketcap)})
+      .attr('cx', function(d) {
+        return d.x
+      })
+      .attr('cy', function(d) {
+        return d.y
+      })
+      .style("stroke", "1f3c88")
+      .style("fill", "0085CA")
+      .style("opacity", 0.9)
+
+    //ENTER
     u.enter()
       .append('circle')
-
-    u.exit().remove()
+        .attr('r', function(d) { return circleSize(d.marketcap)})
+        .attr('cx', function(d) {
+          return d.x
+        })
+        .attr('cy', function(d) {
+          return d.y
+        })
+        .style("stroke", "1f3c88")
+        .style("fill", "0085CA")
+        .style("opacity", 0.9)
   }
-
-}).catch(function(error){
-  console.log(error);
-})
+}
