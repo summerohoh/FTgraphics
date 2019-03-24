@@ -3,7 +3,12 @@ var width = 850 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 var padding = 20;
 
-var kospi = true
+var ind = "ks"
+
+function select(category) {
+  ind=category;
+  console.log(ind);
+}
 
 var svg = d3.select("#chart-area")
     .append("svg")
@@ -29,14 +34,15 @@ g.append("text")
 
 //load data
 //d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv")
-d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test2.csv")
+d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test4.csv")
   .then(function(data){
 
-    console.log(data)
+console.log(data)
 
   var nodes = data.map(function(node, index) {
     return {
       index: index,
+      exchange: node["Exchange"],
       code: node["Code"],
       marketcap: parseFloat(node["Market Cap(KRW)"].replace(/,/g,'')),
       capweight : +node["Index Market Cap weight(%)"],
@@ -47,11 +53,6 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test2.csv
     };
   });
 
-  d3.interval(function(){
-    update(nodes)
-    kospi=!kospi
-  }, 5000)
-
   update(nodes)
 
 }).catch(function(error){
@@ -60,29 +61,9 @@ d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test2.csv
 
 
 function update(nodes){
+  console.log(nodes)
 
-  var value = kospi ? "kospi":"kosdaq";
-
-  // Get the data again
-  if (value =="kosdaq"){
-    d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test3.csv")
-      .then(function(data) {
-      console.log(data)
-      nodes=[]
-      nodes = data.map(function(node, index) {
-        return {
-          index: index,
-          code: node["Code"],
-          marketcap: parseFloat(node["Market Cap(KRW)"].replace(/,/g,'')),
-          capweight : +node["Index Market Cap weight(%)"],
-          changes : +node["Share Price Change(%)"],
-          sector : "Technology",
-          //x: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,''))),
-          fx: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,'')))
-        };
-      });
-  	 });
-}
+  console.log(ind)
 
   var circleSize =d3.scaleSqrt()
     .domain([0, d3.max(nodes,function(d){
@@ -130,10 +111,12 @@ function update(nodes){
   function ticked() {
     var u = g.selectAll('circle')
              //JOIN new data
-             .data(nodes)
+             .data(nodes.filter(function(d){return d.exchange == ind}))
+
 
     //EXIT old elements
-    u.exit().remove()
+    u.exit()
+    .remove()
 
     //UPDATE old elements
     u
