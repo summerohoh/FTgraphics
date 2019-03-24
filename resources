@@ -80,3 +80,21 @@ kospi150
 
   Major Challenge
   * No access to Microsoft Excel - cannot modify the excel file
+
+March
+
+
+March 22
+toggle between kospi and kosdaq
+preliminary tooltip
+
+March 24th
+
+5:20 - 5:45 styling tooltip
+5:45 - 6:00 kosdaq scraper finish
+7:00 - 7:30 merge data (ks, kq)
+7:30 - 8:00 styling web
+
+
+Design
+outline turns black and 
