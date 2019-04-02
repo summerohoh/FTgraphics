@@ -96,5 +96,12 @@ March 24th
 7:30 - 8:00 styling web
 
 
-Design
-outline turns black and 
+April 2nd
+* Made Naver closing price extractor
+* Tested on 20 kosdaq stocks - successful
+
+To Do:
+
+- find stocks that split/merged (kosdaq150)
+- Extract all 150 stocks + exchange code
+ 

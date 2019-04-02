@@ -1,5 +1,5 @@
 import os
-#mport pandas as pd
+#import pandas as pd
 #from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import csv
@@ -19,8 +19,8 @@ os.listdir('.')
 
 
 kosdaq150 = load_file("20181228kosdaq150_list.xls")
-kosdaq150 = kosdaq150.loc[0:3,:]
-url = "http://marketdata.krx.co.kr/contents/MKD/04/0402/04020100/MKD04020100T3T2.jsp"
+kosdaq150 = kosdaq150.loc[0:4,:]
+#url = "http://marketdata.krx.co.kr/contents/MKD/04/0402/04020100/MKD04020100T3T2.jsp"
 
 options = Options()
 options.add_argument("--headless")
@@ -28,89 +28,79 @@ chromedriver = "/Users/summer/Desktop/FTgraphics/chromedriver"
 #driver = webdriver.Chrome(chromedriver)
 #chrome_options=options
 
-def extract_krx_price(stock,date):
-    driver = webdriver.Chrome(executable_path=chromedriver)
-    driver.implicitly_wait(50)
-    driver.get(url)
 
-    stock_code = "A"+stock
-    price = None
+'''extracts closing price from naver finance table'''
+def naver_closing_price(stock, page, row):
+     driver = webdriver.Chrome(chrome_options=options,executable_path=chromedriver)
+     driver.implicitly_wait(50)
+
+     #find initial price
+     url = 'https://finance.naver.com/item/sise_day.nhn?code='+stock+'&page='+str(page)
+     driver.get(url)
+     req = driver.page_source
+     soup=BeautifulSoup(req, 'html.parser')
+     if int(row)<6:
+         info_row = soup.find_all("tr")[int(row)+1]
+     else:
+         info_row = soup.find_all("tr")[int(row)+4]
+
+     price=info_row.find("span",{"class":"tah p11"}).text.replace(",","")
+     driver.quit()
+
+     return (int(price))
+
+
+def parse(stock):
+    #find adj_price for first and lastday
+    try:
+        init_price = naver_closing_price(stock,31,6)
+    except:
+        print("error for:initial price " + stock)
 
     try:
-
-        inputStock = driver.find_element_by_class_name("func-finder-input ")
-        inputStock.clear()
-        inputStock.send_keys(stock_code)
-        inputFromDate= driver.find_element_by_name("fromdate")
-        inputFromDate.clear()
-        inputFromDate.send_keys(date)
-        inputToDate = driver.find_element_by_name("todate")
-        inputToDate.clear()
-        inputToDate.send_keys(date)
-        inputToDate.send_keys(Keys.TAB)
-
-        element = WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable((By.ID, "btnidc4ca4238a0b923820dcc509a6f75849b")))
-
-        element.click()
-        req = driver.page_source
-        soup=BeautifulSoup(req, 'html.parser')
-
-        info_row = soup.find("tbody", {"class":"CI-GRID-BODY-TABLE-TBODY"}).find_all("tr")[0]
-        adj_price = info_row.find("td", {"data-name":"tdd_clsprc"}).text.replace(",","")
-        price = adj_price
-
-    finally:
-        driver.quit()
-
-    return (price)
-
-
-def parse(stock,date1, date2):
-    #find adj_price for first and lastday
-    init_price = extract_krx_price(stock, date1)
-    final_price = extract_krx_price(stock, date2)
+        final_price = naver_closing_price(stock,7,2)
+    except:
+        print("error for:final price " + stock)
 
     #calculate increase in share price
     change = round(((final_price - init_price)/init_price)*100,2)
-
-    return change
-
-
-test = parse(url,"20171228","20181228")
-print(test)
-
-# def get_url():
-#     links = []
-#     for row in kosdaq150.itertuples(index=True, name="stock"):
-#         url_pair=[]
-#         init_date = epoch_converter('2017/12/28')
-#         last_date=epoch_converter('2018/12/28')
-#
-#         #find url for first and lastday
-#         url1= "https://finance.yahoo.com/quote/"+str(row[1])+".KQ/history?period1="+str(init_date)+"&period2="+str(init_date)+"&interval=1d&filter=history&frequency=1d"
-#         url2= "https://finance.yahoo.com/quote/"+str(row[1])+".KQ/history?period1="+str(last_date)+"&period2="+str(last_date)+"&interval=1d&filter=history&frequency=1d"
-#
-#         url_pair.extend((url1,url2))
-#         links.append(url_pair)
-#     return links
-
-# def parse(url1, url2):
-#
-#     return change
-#
-# links_list = get_url()
-#
-# with Pool(5) as p:
-#     share_price_changes = p.starmap(parse,links_list)
-#     p.close()
-#     p.join()
+    return init_price, final_price, change
 
 
-# print(share_price_changes)
-#
-# # Create a column for share price change
-# kosdaq150['Share Price Change(%)'] = share_price_changes
-#
-# #kospi200.to_csv('kospi200_price_changes.csv',index=False)
-# kosdaq150.to_csv('test1.csv',index=False)
+def get_stocks_list():
+    stock_list = []
+    for row in kosdaq150.itertuples(index=True, name="stock"):
+        stock_list.append(row[1])
+    return stock_list
+
+
+test_list=get_stocks_list()
+#print(test)
+#test=naver_closing_price('067290',7,5)
+#8560
+
+
+with Pool(5) as p:
+    results = p.map(parse,test_list)
+    p.close()
+    p.join()
+
+
+init_price=[]
+final_price=[]
+share_price_changes=[]
+
+for row in results:
+    init_price.append(row[0])
+    final_price.append(row[1])
+    share_price_changes.append(row[2])
+
+
+# Create a column for share price change
+kosdaq150['Price on 20171228'] = init_price
+kosdaq150['Price on 20181228'] = final_price
+kosdaq150['Share Price Change(%)'] = share_price_changes
+kosdaq150['Exchange']='kq'
+
+#kospi200.to_csv('kospi200_price_changes.csv',index=False)
+kosdaq150.to_csv('test1.csv',index=False)
