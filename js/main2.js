@@ -44,6 +44,12 @@ var tooltip = d3.select("body")
   	.style("z-index", "10")
   	.style("visibility", "hidden")
 
+g.selectAll(".tick").selectAll('line')
+  .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
+
+g.selectAll(".tick:not(:first-of-type)").selectAll('line')
+  .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
+
 //initial page loading
 updateData();
 
@@ -65,7 +71,7 @@ function updateData() {
         };
       });
 
-      console.log(ind)
+      console.log(nodes);
 
       var circleSize = d3.scaleSqrt()
         .domain([0, d3.max(nodes, function(d) {
@@ -93,12 +99,6 @@ function updateData() {
         .call(xAxis)
         .select(".domain").remove();
 
-      g.selectAll(".tick").selectAll('line')
-        .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
-
-      g.selectAll(".tick:not(:first-of-type)").selectAll('line')
-        .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
-
       //Apply force layout to nodes
       var simulation = d3.forceSimulation(nodes)
         .force("y", d3.forceY(230))
@@ -119,7 +119,6 @@ function updateData() {
           .data(nodes.filter(function(d) {
             return d.exchange == ind
           }))
-
 
         //EXIT old elements
         u.exit()
