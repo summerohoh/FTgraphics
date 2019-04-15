@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="description" content="">
-  <title>FTgraphics</title>
+  <title>FT graphics</title>
   <!--Bootstrap -->
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <!--custom styling -->
@@ -13,29 +13,83 @@
 
 
 <body>
-  <div class="container">
-    <br>
-    <div class="row">
-      <button onclick="select('ks')">
-        KOSPI200
-      </button>
-      <button onclick="select('kq')">
-        KOSDAQ150
-      </button>
+
+  <main role="main">
+    <section class="jumbotron text-center">
+      <div class="container">
+        <h1 class="jumbotron-heading">Korean Stock Performances in 2018</h1>
+        <p class="lead text-muted"> Share Price Change (%) between 2017/12/28 and 2018/12/28 </p>
+        <p>
+          <a href="#" class="btn btn-primary my-2" onclick="select('ks')">KOSPI 200</a>
+          <a href="#" class="btn btn-secondary my-2" onclick="select('kq')">KOSDAQ 150</a>
+        </p>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="row">
+        <div id="chart-area" class="col" align="center"></div>
+      </div>
+    </container>
+
+<br><br><br>
+    <div class="container">
+      <div class="row">
+
+        <div class="col-md-12" >
+          <h3>Data Scraping</h3>
+          <p class="project-description"> Index constituents were downloaded from KRX website and parsed as Pandas Dataframe. Changes to to the indices were also taken into error handling.
+          Historical adjusted prices for KOSPI200, KOSDAQ150 stocks were scraped from Yahoo Finance and Naver Finance, respectively, using Selenium and BeautifulSoup.
+          In order to speed up scraping process, multiprocessing was used and execution time sped up 240 times faster. Alternative sources of data - KRX and Bloomgberg - attempted.
+          </p>
+
+          <h3>Data Vizualization</h3>
+          <p class="project-description"> Visualization was inspired by static data viz from Financial Times. D3.js library was used. Tooltip to display more data and force layout to prevent bubble overlaps.
+          </p>
+
+        </p>
+
+        </div>
+
+        <!-- <div class="col-md-6">
+          <h2>#2 Data Visualization</h2>
+          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+          <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+        </div> -->
+      </div>
     </div>
-    <div>
-      <h3 style="margin-left:30px" >KOSPI 200</h3>
+
+
+        </div>
+
+  </main>
+
+
+  <footer class="text-muted">
+    <div class="container">
+      <p class="float-right">
+        <a href="#">Back to top</a>
+      </p>
+      <p>New to Bootstrap? <a href="{{ site.url }}/">Visit the homepage</a> or read our <a href="{{ site.baseurl }}/docs/{{ site.docs_version }}/getting-started/introduction/">getting started guide</a>.</p>
     </div>
-      <div id="chart-area"></div>
-    </div>
-  </div>
+  </footer>
+
+
 
   <!-- load the js library -->
-  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <!-- <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
   <script src='js/main2.js'></script>
+  <script src="js/bootstrap.min.js"></script> -->
 
+  <!-- External JS libraries -->
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <!-- Custom JS -->
+  <script src="js/main2.js"></script>
 
 
 </body>
+
 </html>

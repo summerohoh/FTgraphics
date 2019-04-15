@@ -1,0 +1,36 @@
+# def extract_krx_price(stock,date):
+#     driver = webdriver.Chrome(executable_path=chromedriver)
+#     driver.implicitly_wait(50)
+#     driver.get(url)
+#
+#     stock_code = "A"+stock
+#     price = None
+#
+#     try:
+
+#         inputStock = driver.find_element_by_class_name("func-finder-input ")
+#         inputStock.clear()
+#         inputStock.send_keys(stock_code)
+#         inputFromDate= driver.find_element_by_name("fromdate")
+#         inputFromDate.clear()
+#         inputFromDate.send_keys(date)
+#         inputToDate = driver.find_element_by_name("todate")
+#         inputToDate.clear()
+#         inputToDate.send_keys(date)
+#         inputToDate.send_keys(Keys.TAB)
+#
+#         element = WebDriverWait(driver, 30).until(
+#         EC.element_to_be_clickable((By.ID, "btnidc4ca4238a0b923820dcc509a6f75849b")))
+#
+#         element.click()
+#         req = driver.page_source
+#         soup=BeautifulSoup(req, 'html.parser')
+#
+#         info_row = soup.find("tbody", {"class":"CI-GRID-BODY-TABLE-TBODY"}).find_all("tr")[0]
+#         adj_price = info_row.find("td", {"data-name":"tdd_clsprc"}).text.replace(",","")
+#         price = int(adj_price)
+#
+#     finally:
+#         driver.quit()
+#
+#     return (price)

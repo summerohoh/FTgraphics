@@ -96,7 +96,7 @@ for row in results:
     share_price_changes.append(row[2])
 
 
-# Create a column for share price change
+# Add scraped data columns 
 kosdaq150['Price on 20171228'] = init_price
 kosdaq150['Price on 20181228'] = final_price
 kosdaq150['Share Price Change(%)'] = share_price_changes

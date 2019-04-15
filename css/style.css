@@ -13,6 +13,20 @@ div.info-tip{
     font-size:12px;
 }
 
+text#x-label{
+  padding-top: 30px;
+  text-anchor:middle;
+  font-size:15px;
+}
+
+.dash-stroke{
+  stroke:#777;
+  stroke-dasharray: 2,2;
+}
+
+.project-description{
+  font-size: 20px;
+}
 /*
 div.info-tip:after {
     content: '';
@@ -25,3 +39,36 @@ div.info-tip:after {
     border-right: 8px solid transparent;
     border-left: 8px solid transparent;
 } */
+.jumbotron {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  margin-bottom: 0;
+  background-color: #fff;
+}
+@media (min-width: 768px) {
+  .jumbotron {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+.jumbotron p:last-child {
+  margin-bottom: 0;
+}
+
+.jumbotron-heading {
+  font-weight: 300;
+}
+
+.jumbotron .container {
+  max-width: 40rem;
+}
+
+footer {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+footer p {
+  margin-bottom: .25rem;
+}

@@ -4,8 +4,8 @@ var margin = {
   bottom: 20,
   left: 10
 };
-var width = 850 - margin.left - margin.right;
-var height = 500 - margin.top - margin.bottom;
+var width = 1000 - margin.left - margin.right;
+var height = 510 - margin.top - margin.bottom;
 var padding = 20;
 
 var ind = "ks"
@@ -27,8 +27,7 @@ var g = svg.append("g")
 g.append("text")
   .attr("x", width / 2)
   .attr("y", height + margin.bottom)
-  .attr("text-anchor", "middle")
-  .attr("font-size", "20px")
+  .attr("id", "x-label")
   .text("Share price change(%)");
 
 //X Scale
@@ -44,11 +43,12 @@ var tooltip = d3.select("body")
   	.style("z-index", "10")
   	.style("visibility", "hidden")
 
-g.selectAll(".tick").selectAll('line')
-  .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
-
-g.selectAll(".tick:not(:first-of-type)").selectAll('line')
-  .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
+// g.selectAll(".tick").selectAll('line')
+//   .attr("class","dash-stroke")
+//   .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
+//
+// g.selectAll(".tick:not(:first-of-type)").selectAll('line')
+//   .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
 
 //initial page loading
 updateData();
@@ -98,6 +98,9 @@ function updateData() {
         .attr("transform", "translate(0,450)")
         .call(xAxis)
         .select(".domain").remove();
+
+      g.selectAll(".tick").selectAll('line')
+        .attr("class","dash-stroke")
 
       //Apply force layout to nodes
       var simulation = d3.forceSimulation(nodes)

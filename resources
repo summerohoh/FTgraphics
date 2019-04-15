@@ -81,8 +81,6 @@ kospi150
   Major Challenge
   * No access to Microsoft Excel - cannot modify the excel file
 
-March
-
 
 March 22
 toggle between kospi and kosdaq
@@ -104,4 +102,8 @@ To Do:
 
 - find stocks that split/merged (kosdaq150)
 - Extract all 150 stocks + exchange code
- 
+
+
+ April 14th
+ -Styled page using bootstrap
+ - kospi 200 error handling for woori bank (was delistedin february). panda drop row, cleaning up index
