@@ -92,7 +92,7 @@ def parse(url1, url2):
 
 
 links_list = get_url()
-share_price_changes = []
+
 with Pool(10) as p:
     results = p.starmap(parse,links_list)
     p.close()

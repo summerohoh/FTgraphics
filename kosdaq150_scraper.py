@@ -5,13 +5,13 @@ from bs4 import BeautifulSoup
 import csv
 #from datetime import datetime, timezone
 from multiprocessing import Pool
-from handlers import load_file,extract_adj_price,epoch_converter
+from handlers import load_file,epoch_converter
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+#from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
+#from selenium.webdriver.common.keys import Keys
+#from selenium.webdriver.common.by import By
 
 
 os.chdir("/Users/summer/Desktop/FTgraphics")
@@ -19,7 +19,7 @@ os.listdir('.')
 
 
 kosdaq150 = load_file("20181228kosdaq150_list.xls")
-kosdaq150 = kosdaq150.loc[0:4,:]
+kosdaq150 = kosdaq150.loc[0:150,:]
 #url = "http://marketdata.krx.co.kr/contents/MKD/04/0402/04020100/MKD04020100T3T2.jsp"
 
 options = Options()
@@ -74,14 +74,10 @@ def get_stocks_list():
     return stock_list
 
 
-test_list=get_stocks_list()
-#print(test)
-#test=naver_closing_price('067290',7,5)
-#8560
+stock_list=get_stocks_list()
 
-
-with Pool(5) as p:
-    results = p.map(parse,test_list)
+with Pool(10) as p:
+    results = p.map(parse,stock_list)
     p.close()
     p.join()
 
@@ -96,11 +92,11 @@ for row in results:
     share_price_changes.append(row[2])
 
 
-# Add scraped data columns 
+# Add scraped data columns
 kosdaq150['Price on 20171228'] = init_price
 kosdaq150['Price on 20181228'] = final_price
 kosdaq150['Share Price Change(%)'] = share_price_changes
 kosdaq150['Exchange']='kq'
 
 #kospi200.to_csv('kospi200_price_changes.csv',index=False)
-kosdaq150.to_csv('test1.csv',index=False)
+kosdaq150.to_csv('kosdaq150_data.csv',index=False)

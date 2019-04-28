@@ -9,10 +9,33 @@ var height = 510 - margin.top - margin.bottom;
 var padding = 20;
 
 var ind = "ks"
+buttonUpdate()
+
+function buttonUpdate(){
+  var kospi_btn = document.getElementById("kospi-btn");
+  var kosdaq_btn = document.getElementById("kosdaq-btn");
+  if (ind =="ks"){
+    kospi_btn.classList.add("kospi-btn");
+    kosdaq_btn.classList.remove("kosdaq-btn");
+  }else{
+    kospi_btn.classList.remove("kospi-btn");
+    kosdaq_btn.classList.add("kosdaq-btn");
+  }
+}
+
+function circleColor(){
+  if (ind =="ks"){
+    color="#0085CA";
+  }else{
+    color="#CA0043";
+  }
+  return color
+}
 
 function select(category) {
   ind = category;
-  updateData()
+  buttonUpdate();
+  updateData();
 }
 
 var svg = d3.select("#chart-area")
@@ -54,7 +77,7 @@ var tooltip = d3.select("body")
 updateData();
 
 function updateData() {
-  d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test4.csv")
+  d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/data/test1.csv")
     .then(function(data) {
       var nodes = data.map(function(node, index) {
         return {
@@ -77,7 +100,7 @@ function updateData() {
         .domain([0, d3.max(nodes, function(d) {
           return d.marketcap
         })])
-        .range([0, 30]);
+        .range([0, 50]);
 
       var color = d3.scaleOrdinal()
         .domain(nodes.map(function(d) {
@@ -139,7 +162,7 @@ function updateData() {
             return d.y
           })
           .style("stroke", "000")
-          .style("fill", "0085CA")
+          .style("fill", circleColor())
 
         //ENTER
         u.enter()
@@ -152,9 +175,10 @@ function updateData() {
                 .transition()
                 .attr('stroke-width',2)
               return tooltip.html(
-                "<p>Code:"+d.code+"<br>" +
-                "Name:"+d.name+"<br>" +
-                "Marker Cap:"+d.marketcap+"<br>" +
+                "<p>"+
+                "<span class='description'>" +d.name +"</span>" +
+                "<span>("+d.code+"."+d.exchange+")</span><br>" +
+                "Market Cap:"+d.marketcap+"<br>" +
                 "</p>"
               )
                 .style("visibility", "visible");
