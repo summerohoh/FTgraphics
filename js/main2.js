@@ -4,7 +4,7 @@ var margin = {
   bottom: 20,
   left: 10
 };
-var width = 1000 - margin.left - margin.right;
+var width = 980 - margin.left - margin.right;
 var height = 510 - margin.top - margin.bottom;
 var padding = 20;
 
@@ -35,23 +35,38 @@ function circleColor(){
 function select(category) {
   ind = category;
   buttonUpdate();
-  updateData();
+  updateData(ind);
+}
+
+function formatMarketCap(num) {
+    console.log(num);
+    billions = num/1.0e+12;
+   if (billions>1){
+     rounded = billions.toFixed(2) + "B";
+   }else{
+     rounded = (num/1.0e+9).toFixed(2) + "M";
+   }
+   return rounded;
 }
 
 var svg = d3.select("#chart-area")
   .append("svg")
-  .attr("width", width)
-  .attr("height", height)
+  //.attr("width", width)
+  //.attr("height", height)
+  //responsive SVG needs these 2 attributes and no width and height attr
+  .attr("preserveAspectRatio", "xMinYMin meet")
+  .attr("viewBox", "0 0 "+width+" "+height+"")
 
 var g = svg.append("g")
   .attr("transform", "translate(0,-30)");
 
 //xAxis label
 g.append("text")
-  .attr("x", width / 2)
+  .attr("text-anchor","middle")
+  .attr("x", width/2)
   .attr("y", height + margin.bottom)
-  .attr("id", "x-label")
-  .text("Share price change(%)");
+  .attr("class", "x-label")
+  .text("Share price change(%)")
 
 //X Scale
 var x = d3.scaleLinear()
@@ -74,10 +89,11 @@ var tooltip = d3.select("body")
 //   .attr("stroke", "#777").attr("stroke-dasharray", "2,2");
 
 //initial page loading
-updateData();
+updateData(ind);
 
-function updateData() {
-  d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/data/test1.csv")
+
+function updateData(ind) {
+  d3.csv("https://raw.githubusercontent.com/summerohoh/FTgraphics/master/test/test1.csv")
     .then(function(data) {
       var nodes = data.map(function(node, index) {
         return {
@@ -86,10 +102,11 @@ function updateData() {
           code: node["Code"],
           name:node["Issue Name"],
           marketcap: parseFloat(node["Market Cap(KRW)"].replace(/,/g, '')),
+          formattedMarketCap:formatMarketCap(parseFloat(node["Market Cap(KRW)"].replace(/,/g, ''))),
           capweight: +node["Index Market Cap weight(%)"],
           changes: +node["Share Price Change(%)"],
-          sector: "Technology",
-          //x: x(parseFloat(node["Share Price Change(%)"].replace(/,/g,''))),
+          initprice: +node["Price on 20171228"],
+          finalprice: +node["Price on 20181228"],
           fx: x(parseFloat(node["Share Price Change(%)"].replace(/,/g, '')))
         };
       });
@@ -175,15 +192,15 @@ function updateData() {
                 .transition()
                 .attr('stroke-width',2)
               return tooltip.html(
-                "<p>"+
-                "<span class='description'>" +d.name +"</span>" +
-                "<span>("+d.code+"."+d.exchange+")</span><br>" +
-                "Market Cap:"+d.marketcap+"<br>" +
-                "</p>"
+                "<div class='info-box'><p>"+
+                "<span class='description'>" +d.name +"</span><br>" +
+                "<span class='code'>"+d.code+"."+d.exchange+"</span>  | " +
+                "<span class=''>Market Cap: "+d.formattedMarketCap+"<span>" +
+                "</p></div>"
               )
                 .style("visibility", "visible");
           })
-	        .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+	        .on("mousemove", function(){return tooltip.style("top", (event.pageY-40)+"px").style("left",(event.pageX+20)+"px");})
 	        .on("mouseout", function(){
             d3.select(this)
               .transition()
@@ -199,6 +216,19 @@ function updateData() {
           .style("fill", "0085CA")
           .style("opacity", 0.8)
       }
+
+        //
+        // if (ind="kosdaq"){
+        //   //circleSize.range([0,100]);
+        //   console.log(ind);
+        // }else{
+        //     //circleSize.range([0,50]);
+        // }
+        // // g.selectAll('circle')
+      	// // 		 	.transition()
+      	// // 		 		.call(circleSize);
+
+
     }).catch(function(error) {
       console.log(error);
     })

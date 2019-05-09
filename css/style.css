@@ -25,43 +25,53 @@
 div.info-tip{
     position: absolute;
     bottom:220%;
-    width:220px;
+    min-width:245px;
+    width: auto;
     color: #fff;
     background: rgb(0,0,0,0.8);
-    height: 80px;
-    line-height: 20px;
+    height: 70px;
     text-align: left;
     visibility: hidden;
+    border: 1px red solid;
     border-radius: 6px;
-    padding-top: 20px;
-    padding-left: 20px;
     font-size:12px;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
 }
 
 div.info-tip:after {
   position: absolute;
-  bottom: 80%;
+  bottom: 50%;
   right:100%;
   width: 0;
-  border-top: 5px solid #000;
-  border-top: 5px solid hsla(0, 0%, 20%, 0.9);
-  border-right: 5px solid transparent;
-  border-left: 5px solid transparent;
+  margin-right: -6px;
+  border-top: 7px solid hsla(0, 0%, 0%, 0.8);
+  border-right: 9px solid transparent;
+  border-left: 9px solid transparent;
   content: " ";
-  font-size: 0;
-  line-height: 0;
   transform: rotate(90deg)
 }
 
-border-left: 5px solid transparent;
-border-right: 5px solid transparent;
-border-top: 5px solid #000;
-border-right: 5px solid transparent;
-border-left: 5px solid transparent;
+div.info-box{
+  display: inline-block;
+  text-align: left;
+  box-sizing: border-box;
+  border: 1px solid blue;
+  height: 90%;
+  width: 90%;
+
+}
+
+span.description{
+  font-size: 15px;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
 
 text#x-label{
   padding-top: 30px;
-  text-anchor:middle;
+  text-align: center;
   font-size:15px;
 }
 

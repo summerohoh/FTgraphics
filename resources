@@ -108,4 +108,10 @@ To Do:
  -Styled page using bootstrap
  - kospi 200 error handling for woori bank (was delistedin february). panda drop row, cleaning up index
 
- April 24th
+April 24th
+
+
+May 9th
+div positonging, styled tootltip - centering content, labels
+money format Billion, million, digit handling
+made canvasresponsive using viewBox
