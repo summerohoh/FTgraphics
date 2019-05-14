@@ -11,6 +11,9 @@ January 22nd
  * Parsed Excel File to Pandas Dataframe
  * Identified url to locate historical prices
 
+ Constituents of KOSPI 200 and KOSDAQ 150 indices are provided by KRX.
+
+
 January 29th
  * Web scraped adjusted prices for a given stock using BeautifulSoup
  * Calculated Share Price Change and appended the value to the DataFrame
@@ -114,4 +117,4 @@ April 24th
 May 9th
 div positonging, styled tootltip - centering content, labels
 money format Billion, million, digit handling
-made canvasresponsive using viewBox
+made canvas responsive using viewBox

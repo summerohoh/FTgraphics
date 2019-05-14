@@ -32,7 +32,6 @@ div.info-tip{
     height: 70px;
     text-align: left;
     visibility: hidden;
-    border: 1px red solid;
     border-radius: 6px;
     font-size:12px;
     padding: 10px;
@@ -57,16 +56,18 @@ div.info-box{
   display: inline-block;
   text-align: left;
   box-sizing: border-box;
-  border: 1px solid blue;
   height: 90%;
-  width: 90%;
+  width: 100%;
+  margin: auto;
 
 }
 
 span.description{
+  display: inline-block;
   font-size: 15px;
   font-weight: bold;
   padding-bottom: 5px;
+  text-align: justify;
 }
 
 text#x-label{
@@ -77,12 +78,43 @@ text#x-label{
 
 .dash-stroke{
   stroke:#777;
-  stroke-dasharray: 2,2;
+  stroke-dasharray: 2.2;
+}
+
+.legend {
+    font-size: 12px;
+    font-family: sans-serif;
+  }
+
+  .legend path,
+  .legend legendline {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    opacity: 1;
+  }
+
+  .circle-legend line {
+    stroke: #000;
+    shape-rendering: crispEdges;
+    stroke-dasharray: 1,1;
+  }
+
+  .circle-legend circle {
+    stroke: #000;
+    fill: none;
+  }
+
+.legendtext{
+  font-weight:300;
+  font-size: 8px;
 }
 
 .project-description{
-  font-size: 20px;
+  font-size: 15px;
 }
+
+
 /*
 div.info-tip:after {
     content: '';

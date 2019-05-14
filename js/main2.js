@@ -39,7 +39,6 @@ function select(category) {
 }
 
 function formatMarketCap(num) {
-    console.log(num);
     billions = num/1.0e+12;
    if (billions>1){
      rounded = billions.toFixed(2) + "B";
@@ -72,6 +71,7 @@ g.append("text")
 var x = d3.scaleLinear()
   .domain([-80, 120])
   .range([0 + padding, width - padding]); //add padding so the circle does not get cutoff
+
 
 //tooltip area
 var tooltip = d3.select("body")
@@ -141,6 +141,24 @@ function updateData(ind) {
 
       g.selectAll(".tick").selectAll('line')
         .attr("class","dash-stroke")
+
+
+        var formatLegend = function(d) {
+            return Math.round(d/1.0e+12) + "B";
+          }
+
+
+        var circleKey = circleLegend()
+            .scale(circleSize)
+            .tickValues([1000000000000,10000000000000,50000000000000, 100000000000000])
+            .tickFormat(formatLegend)
+            .tickPadding(5)
+            .tickExtend(20)
+            .orient("right") //default
+
+        svg.append('g')
+          .attr('transform', 'translate(850, 100)')
+          .call(circleKey)
 
       //Apply force layout to nodes
       var simulation = d3.forceSimulation(nodes)
@@ -217,16 +235,12 @@ function updateData(ind) {
           .style("opacity", 0.8)
       }
 
-        //
-        // if (ind="kosdaq"){
-        //   //circleSize.range([0,100]);
-        //   console.log(ind);
-        // }else{
-        //     //circleSize.range([0,50]);
-        // }
-        // // g.selectAll('circle')
-      	// // 		 	.transition()
-      	// // 		 		.call(circleSize);
+      //legend
+      // var scale = d3.scaleSqrt()
+      //             .domain([0, 1000000])
+      //             .range([0, 100])
+      //
+      // scale.domain([0,1000000])
 
 
     }).catch(function(error) {
